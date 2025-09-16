@@ -2,31 +2,44 @@ const { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron/mai
 const path = require('path')
 
 const STATES = {
-	SHOW: 0,
-	HIDE: 0,
+	START: 1,
+	SHOW: 2,
+	HIDE: 3,
 }
 
 const state = {
-	state: STATES.HIDE,
+	state: STATES.START,
 	win: null
 }
 
 function toggleWindow() {
 	if (!state.win) {
+		state.state = STATES.SHOW
 		state.win = new BrowserWindow({
 			width: 300,
 			height: 200,
 			show: false,
 			frame: false,
-			alwaysOnTop: true
+			alwaysOnTop: true,
+			skipTaskbar: true // do not show on windows taskbar
 		})
 		state.win.loadFile('index.html')
 	}
 
+	// Hide when the window loses focus (click outside)
+	state.win.on('blur', () => {
+		if (state.win && state.win.isVisible()) {
+			state.win.hide()
+		}
+	})
+
 	if (state.win.isVisible()) {
+		state.state = STATES.HIDE
 		state.win.hide()
 	} else {
+		state.state = STATES.SHOW
 		state.win.show()
+		state.win.focus()  // make sure the window has focus
 	}
 }
 
