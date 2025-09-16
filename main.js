@@ -1,24 +1,32 @@
 const { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron/main')
 const path = require('path')
 
-let win = null
+const STATES = {
+	SHOW: 0,
+	HIDE: 0,
+}
+
+const state = {
+	state: STATES.HIDE,
+	win: null
+}
 
 function toggleWindow() {
-	if (!win) {
-		win = new BrowserWindow({
+	if (!state.win) {
+		state.win = new BrowserWindow({
 			width: 300,
 			height: 200,
 			show: false,
 			frame: false,
 			alwaysOnTop: true
 		})
-		win.loadFile('index.html')
+		state.win.loadFile('index.html')
 	}
 
-	if (win.isVisible()) {
-		win.hide()
+	if (state.win.isVisible()) {
+		state.win.hide()
 	} else {
-		win.show()
+		state.win.show()
 	}
 }
 
