@@ -1,117 +1,51 @@
-const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain } = require('electron/main')
-const path = require('path')
-
+const { app } = require('electron')
 
 const DEBUG = process.env.NODE_ENV === "development"
-const HTML_PATH = "renderer/index.html"
-const WIDTH = 275
-const HEIGHT = 150
+const WIDTH = 350
+const HEIGHT = 300
+const OPERATIONS_PATH = 'C:\\Users\\engjg\\dev\\copy-to-prompt\\operators.json'
 
 if (DEBUG) {
-	console.log("Development mode detected -- enabling hot reload")
 	try {
-		require("electron-reloader")(module, {
-			debug: true,
-			watchRenderer: true
-		})
+		require("electron-reloader")(module, { debug: true, watchRenderer: true })
 		console.log("Hot reload ENABLED ✓")
 	} catch (err) {
 		console.error("Hot reload error:", err)
 	}
 }
 
-
-ipcMain.on('toMain', (event, data) => {
-	console.log('Received from renderer:', data)
-	event.sender.send('fromMain', { reply: 'Hello back!' })
-})
-
-const STATES = {
-	START: 1,
-	SHOW: 2,
-	HIDE: 3,
-}
-
-const state = {
-	state: STATES.START,
-	win: null
-}
-
-function toggleWindow() {
-	if (!state.win) {
-		state.state = STATES.SHOW
-		state.win = new BrowserWindow({
-			width: WIDTH,
-			height: HEIGHT,
-			show: false,
-			alwaysOnTop: true,
-			skipTaskbar: true, 		// do not show on windows taskbar
-			transparent: true,   	// ✅ make window transparent
-			resizable: false,
-			frame: false,        	// optional, remove window frame
-			webPreferences: {
-				preload: `${__dirname}/../preload/preload.js`,
-			}
-		})
-		state.win.loadFile(HTML_PATH)
-		if (DEBUG) state.win.webContents.openDevTools({ mode: 'detach' })
-	}
-
-	// Hide when the window loses focus (click outside)
-	state.win.on('blur', () => {
-		if (DEBUG) return
-		if (state.win && state.win.isVisible()) {
-			toggleWindow()
-		}
-	})
-
-	if (state.win.isVisible()) {
-		state.state = STATES.HIDE
-		state.win.hide()
-	} else {
-		state.state = STATES.SHOW
-		state.win.show()
-		state.win.focus()  // make sure the window has focus
-	}
-}
-
-const createWindow = () => {
-	const tray = new Tray(path.join(__dirname, '../icon.ico'))
-	const contextMenu = Menu.buildFromTemplate([
-		{ label: 'Show', click: () => toggleWindow() },
-		{ label: 'Quit', click: () => app.quit() }
-	])
-	tray.setToolTip('Copy to prompt')
-	tray.setContextMenu(contextMenu)
-
-	// Register global shortcut (Ctrl+Shift+Space for example)
-	globalShortcut.register('Control+Shift+Space', () => {
-		toggleWindow()
-	})
-	globalShortcut.register('Escape', () => {
-		if (state.win && state.win.isVisible()) {
-			toggleWindow()
-		}
-	})
-
-	toggleWindow()
-}
+const OperationsManager = require('./operators')
+const WindowManager = require('./window')
+const TrayManager = require('./tray')
+const Shortcuts = require('./shortcuts')
+const ipc = require('./ipc')
 
 app.whenReady().then(() => {
-	createWindow()
+	const opManager = new OperationsManager(OPERATIONS_PATH)
+	const winManager = new WindowManager(WIDTH, HEIGHT)
+	const trayManager = new TrayManager(winManager)
+	const shortcuts = new Shortcuts(winManager)
+
+	trayManager.init()
+	shortcuts.init()
+	winManager.toggleWindow()
+	opManager.load()
+
+	ipc.setupIPC(opManager)
 })
 
 app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow()
-	}
-})
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
+	if (WindowManager.getWindowsCount() === 0) {
+		const winManager = new WindowManager()
+		winManager.toggleWindow()
 	}
 })
 
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') app.quit()
+})
+
 app.on('will-quit', () => {
-	globalShortcut.unregisterAll()
+	const Shortcuts = require('./shortcuts')
+	Shortcuts.unregisterAll()
 })

@@ -4,3 +4,8 @@ body {
 	padding: 0;
 	background-color: transparent;
 }
+
+article {
+	color: #fff;
+	background-color: #1b1b1b10;
+}
