@@ -4,6 +4,7 @@ const DEBUG = process.env.NODE_ENV === "development"
 const WIDTH = 350
 const HEIGHT = 300
 const OPERATIONS_PATH = 'C:\\Users\\engjg\\dev\\copy-to-prompt\\operators.json'
+const SCRIPTS_DIR = 'C:\\Users\\engjg\\dev\\copy-to-prompt\\'
 
 if (DEBUG) {
 	try {
@@ -19,19 +20,21 @@ const WindowManager = require('./window')
 const TrayManager = require('./tray')
 const Shortcuts = require('./shortcuts')
 const ipc = require('./ipc')
+const ScriptRunner = require('./scriptRunner')
 
 app.whenReady().then(() => {
 	const opManager = new OperationsManager(OPERATIONS_PATH)
 	const winManager = new WindowManager(WIDTH, HEIGHT)
 	const trayManager = new TrayManager(winManager)
 	const shortcuts = new Shortcuts(winManager)
+	const runner = new ScriptRunner(SCRIPTS_DIR)
 
 	trayManager.init()
 	shortcuts.init()
+	ipc.init(opManager, winManager, runner)
+
 	winManager.toggleWindow()
 	opManager.load()
-
-	ipc.setupIPC(opManager)
 })
 
 app.on('activate', () => {

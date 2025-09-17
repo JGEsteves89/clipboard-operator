@@ -7,18 +7,40 @@ class WindowManager {
 		this.state = 'start'
 		this.width = width
 		this.height = height
+		this.triggerShow = null // overrided by ipc
+		this.disableEscapeKeyShortcut = null  // overrided by shortkey
+		this.enableEscapeKeyShortcut = null // overrided by shortkey
 	}
 
 	toggleWindow() {
 		if (!this.win) this.createWindow()
 
+		console.log('Toogling window')
 		if (this.win.isVisible()) {
+			console.log('Will hide window')
 			this.state = 'hide'
 			this.win.hide()
+
+			// release escape global short ckey
+			if (this.disableEscapeKeyShortcut) {
+				this.disableEscapeKeyShortcut()
+			}
 		} else {
+			console.log('Will show window')
 			this.state = 'show'
+
+			// trigger clean up and input focus
+			if (this.triggerShow) {
+				this.triggerShow()
+			}
+
 			this.win.show()
 			this.win.focus()
+
+			// make escape work to exit
+			if (this.enableEscapeKeyShortcut) {
+				this.enableEscapeKeyShortcut()
+			}
 		}
 	}
 

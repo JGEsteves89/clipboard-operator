@@ -5,13 +5,38 @@ window.api.receive('fromMain', (msg) => {
 	console.log('[MAIN => REND]:', msg.command, msg.data)
 	if (msg.command === 'sendOperators') {
 		operators = msg.data
+	} else if (msg.command === 'triggerShow') {
+		// clean the current input
+		const searchInput = document.getElementById('searchInput')
+		const results = document.getElementById('results')
+
+		if (searchInput) {
+			searchInput.value = ""
+			searchInput.focus()
+		}
+
+		if (results) {
+			results.innerHTML = "" // optional: clear old results
+		}
 	}
 })
 
+function getBestResult(input) {
+	const query = input.value.toLowerCase()
+	// eslint-disable-next-line no-undef
+	const fuse = new Fuse(operators, {
+		keys: [
+			{ name: 'operator', weight: 0.7 }, // headline is more important
+			// { name: 'text', weight: 0.3 }      // text is secondary
+		],
+		threshold: 0.4,  // lower = stricter match, higher = fuzzier
+		ignoreLocation: true,
+	})
+	const filtered = fuse.search(query).map(r => r.item)
+	return filtered.length > 0 ? filtered[0] : undefined
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-
-
 	function renderListItem(result) {
 		return `\
 				<article class="round p-2 text-sm">
@@ -28,43 +53,39 @@ document.addEventListener("DOMContentLoaded", () => {
 				</article>`
 	}
 
-
 	const searchInput = document.getElementById('searchInput')
 	const results = document.getElementById('results')
 
 	function renderResult(result) {
 		results.innerHTML = ""
 		if (result) {
-			console.log('Best result is', result)
 			results.innerHTML = renderListItem(result)
-		} else {
-			console.log('No best result')
 		}
 	}
 
 	searchInput.addEventListener('input', () => {
-		const query = searchInput.value.toLowerCase()
-		// eslint-disable-next-line no-undef
-		const fuse = new Fuse(operators, {
-			keys: [
-				{ name: 'operator', weight: 0.7 }, // headline is more important
-				// { name: 'text', weight: 0.3 }      // text is secondary
-			],
-			threshold: 0.4,  // lower = stricter match, higher = fuzzier
-			ignoreLocation: true,
-		})
-		const filtered = fuse.search(query).map(r => r.item)
-		const bestResult = filtered.length > 0 ? filtered[0] : undefined
+		const bestResult = getBestResult(searchInput)
 		renderResult(bestResult)
+	})
+
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Enter') {
+			const result = getBestResult(searchInput)
+			window.api.send('toMain', {
+				command: 'runOperator',
+				data: result
+			})
+		}
 	})
 
 	if (operators.length === 0) {
 		window.api.send('toMain', {
 			command: 'getOperators',
-			data: operators
+			data: null
 		})
 	}
 
 	// Initial render: empty
 	renderResult()
+	searchInput.focus()
 })

@@ -1,12 +1,12 @@
 # copy to prompt
 
 ## Things that I still want to do
- - [ ] Load the json with all the operators from the main
- - [ ] Pass the json operators to front end
- - [ ] On front end, trigger a enter or select to operate
- - [ ] Load the script from the operator
- - [ ] Get the current clipboard
- - [ ] Preform the operation
- - [ ] Same the result into clipboard
+ - [X] Load the json with all the operators from the main
+ - [X] Pass the json operators to front end
+ - [X] On front end, trigger a enter or select to operate
+ - [X] Load the script from the operator
+ - [X] Get the current clipboard
+ - [X] Preform the operation
+ - [X] Same the result into clipboard
   
 ## Things that would be nice to do
