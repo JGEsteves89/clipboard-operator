@@ -1,7 +1,22 @@
 const { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron/main')
 const path = require('path')
 
+
 const DEBUG = true
+
+if (DEBUG) {
+	console.log("Development mode detected -- enabling hot reload")
+	try {
+		require("electron-reloader")(module, {
+			debug: true,
+			watchRenderer: true
+		})
+		console.log("Hot reload ENABLED ✓")
+	} catch (err) {
+		console.error("Hot reload error:", err)
+	}
+}
+
 
 const STATES = {
 	START: 1,
