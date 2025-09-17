@@ -10,3 +10,7 @@
  - [X] Same the result into clipboard
   
 ## Things that would be nice to do
+
+ - [ ] Error handling in messages
+ - [ ] Error handling when the script has some error
+ - [ ] Show processing for slow runners

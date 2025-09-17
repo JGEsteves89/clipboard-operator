@@ -15,8 +15,8 @@ class Shortcuts {
 		globalShortcut.unregister('Escape')
 	}
 	init() {
-		this.windowManager.disableEscapeKeyShortcut = this.disableEscapeKeyShortcut
-		this.windowManager.enableEscapeKeyShortcut = this.enableEscapeKeyShortcut
+		this.windowManager.disableEscapeKeyShortcut = this.disableEscapeKeyShortcut.bind(this)
+		this.windowManager.enableEscapeKeyShortcut = this.enableEscapeKeyShortcut.bind(this)
 		globalShortcut.register('Control+Shift+Space', () => {
 			this.windowManager.toggleWindow()
 		})

@@ -38,10 +38,11 @@ function getBestResult(input) {
 
 document.addEventListener("DOMContentLoaded", () => {
 	function renderListItem(result) {
+		// you can check all the icons in https://fonts.google.com/icons
 		return `\
 				<article class="round p-2 text-sm">
 					<div class="row gap-2">
-						<i>${result.icon}</i>
+						<i class="material-symbols-outlined">${result.icon}</i>
 						<div class="max">
 							<h5 class="text-sm mb-0">${result.operator}</h5>
 							<p class="text-xs mb-1">${result.description}</p>

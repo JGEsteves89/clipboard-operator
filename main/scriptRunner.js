@@ -25,10 +25,19 @@ class ScriptRunner {
 		console.log('Calling script.run()')
 		try {
 			const input = clipboard.readText()
-			console.log('Running script with "', input.substring(0, 300) + '"')
+			console.log('Running script with:')
+			console.log('############')
+			console.log(input.substring(0, 300) + (input.length > 300 ? '\n...' : ''))
+			console.log('############')
+			
 			const result = await script.run(input)  // 👈 await here
 			if (typeof result === 'string') {
-				console.log('Returning script with "', result.substring(0, 300) + '"')
+
+				console.log('Returning script with:')
+				console.log('############')
+				console.log(result.substring(0, 300) + (result.length > 300 ? '\n...' : ''))
+				console.log('############')
+
 				clipboard.writeText(result)
 				console.log('Script done, result copied to clipboard')
 			} else {
