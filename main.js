@@ -2,7 +2,7 @@ const { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron/mai
 const path = require('path')
 
 
-const DEBUG = true
+const DEBUG = process.env.NODE_ENV === "development"
 
 if (DEBUG) {
 	console.log("Development mode detected -- enabling hot reload")

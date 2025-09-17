@@ -5,7 +5,7 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"dev": "electron .",
+		"dev": "cross-env NODE_ENV=development electron .",
 		"lint": "eslint . --ext .js,.mjs,.cjs",
 		"lint:fix": "eslint . --ext .js,.mjs,.cjs --fix"
 	},
@@ -14,6 +14,7 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@eslint/js": "^9.35.0",
+		"cross-env": "^10.0.0",
 		"electron": "^38.1.1",
 		"electron-reloader": "^1.2.3",
 		"eslint": "^9.35.0",
