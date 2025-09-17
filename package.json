@@ -2,7 +2,7 @@
 	"name": "copy-to-prompt",
 	"version": "1.0.0",
 	"description": "",
-	"main": "main.js",
+	"main": "main/main.js",
 	"scripts": {
 		"start": "electron .",
 		"dev": "cross-env NODE_ENV=development electron .",
@@ -19,5 +19,8 @@
 		"electron-reloader": "^1.2.3",
 		"eslint": "^9.35.0",
 		"globals": "^16.4.0"
+	},
+	"dependencies": {
+		"fuse.js": "^7.1.0"
 	}
 }

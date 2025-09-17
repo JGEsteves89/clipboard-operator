@@ -1,8 +1,11 @@
-const { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron/main')
+const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain } = require('electron/main')
 const path = require('path')
 
 
 const DEBUG = process.env.NODE_ENV === "development"
+const HTML_PATH = "renderer/index.html"
+const WIDTH = 275
+const HEIGHT = 150
 
 if (DEBUG) {
 	console.log("Development mode detected -- enabling hot reload")
@@ -17,6 +20,11 @@ if (DEBUG) {
 	}
 }
 
+
+ipcMain.on('toMain', (event, data) => {
+	console.log('Received from renderer:', data)
+	event.sender.send('fromMain', { reply: 'Hello back!' })
+})
 
 const STATES = {
 	START: 1,
@@ -33,14 +41,19 @@ function toggleWindow() {
 	if (!state.win) {
 		state.state = STATES.SHOW
 		state.win = new BrowserWindow({
-			width: 275,
-			height: 70,
+			width: WIDTH,
+			height: HEIGHT,
 			show: false,
-			frame: false,
 			alwaysOnTop: true,
-			skipTaskbar: true // do not show on windows taskbar
+			skipTaskbar: true, 		// do not show on windows taskbar
+			transparent: true,   	// ✅ make window transparent
+			resizable: false,
+			frame: false,        	// optional, remove window frame
+			webPreferences: {
+				preload: `${__dirname}/../preload/preload.js`,
+			}
 		})
-		state.win.loadFile('index.html')
+		state.win.loadFile(HTML_PATH)
 		if (DEBUG) state.win.webContents.openDevTools({ mode: 'detach' })
 	}
 
@@ -63,7 +76,7 @@ function toggleWindow() {
 }
 
 const createWindow = () => {
-	const tray = new Tray(path.join(__dirname, 'icon.ico'))
+	const tray = new Tray(path.join(__dirname, '../icon.ico'))
 	const contextMenu = Menu.buildFromTemplate([
 		{ label: 'Show', click: () => toggleWindow() },
 		{ label: 'Quit', click: () => app.quit() }
@@ -86,15 +99,13 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
 	createWindow()
-
-	app.on('activate', () => {
-		if (BrowserWindow.getAllWindows().length === 0) {
-			createWindow()
-		}
-	})
 })
 
-
+app.on('activate', () => {
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow()
+	}
+})
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
 		app.quit()
