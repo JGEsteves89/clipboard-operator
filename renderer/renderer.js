@@ -47,6 +47,7 @@ function renderResult(result) {
 
 searchInput.addEventListener('input', () => {
 	const query = searchInput.value.toLowerCase()
+	// eslint-disable-next-line no-undef
 	const fuse = new Fuse(items, searchOptions)
 	const filtered = fuse.search(query).map(r => r.item)
 	const bestResult = filtered.length > 0 ? filtered[0] : undefined
