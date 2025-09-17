@@ -1,6 +1,8 @@
 const { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron/main')
 const path = require('path')
 
+const DEBUG = true
+
 const STATES = {
 	START: 1,
 	SHOW: 2,
@@ -16,20 +18,22 @@ function toggleWindow() {
 	if (!state.win) {
 		state.state = STATES.SHOW
 		state.win = new BrowserWindow({
-			width: 300,
-			height: 200,
+			width: 275,
+			height: 70,
 			show: false,
 			frame: false,
 			alwaysOnTop: true,
 			skipTaskbar: true // do not show on windows taskbar
 		})
 		state.win.loadFile('index.html')
+		if (DEBUG) state.win.webContents.openDevTools({ mode: 'detach' })
 	}
 
 	// Hide when the window loses focus (click outside)
 	state.win.on('blur', () => {
+		if (DEBUG) return
 		if (state.win && state.win.isVisible()) {
-			state.win.hide()
+			toggleWindow()
 		}
 	})
 
@@ -56,7 +60,13 @@ const createWindow = () => {
 	globalShortcut.register('Control+Shift+Space', () => {
 		toggleWindow()
 	})
+	globalShortcut.register('Escape', () => {
+		if (state.win && state.win.isVisible()) {
+			toggleWindow()
+		}
+	})
 
+	toggleWindow()
 }
 
 app.whenReady().then(() => {
@@ -68,6 +78,7 @@ app.whenReady().then(() => {
 		}
 	})
 })
+
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
