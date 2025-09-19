@@ -29,7 +29,7 @@ class ScriptRunner {
 			console.log('############')
 			console.log(input.substring(0, 300) + (input.length > 300 ? '\n...' : ''))
 			console.log('############')
-			
+
 			const result = await script.run(input)  // 👈 await here
 			if (typeof result === 'string') {
 
@@ -40,6 +40,11 @@ class ScriptRunner {
 
 				clipboard.writeText(result)
 				console.log('Script done, result copied to clipboard')
+
+				if (clipboard.readText() !== result) {
+					console.error('Something went wront when seeting the clipboard')
+				}
+
 			} else {
 				console.error('Script did not return a string:', result)
 			}
