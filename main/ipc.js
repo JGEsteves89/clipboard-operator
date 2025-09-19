@@ -3,16 +3,13 @@ const { ipcMain } = require('electron')
 function init(opManager, winManager, scriptRunner) {
 	ipcMain.on('toMain', (event, msg) => {
 		console.log('[REND => MAIN]:', msg.command, msg.data)
-		if (msg.command === 'getOperators') {
-			const operators = opManager.operators
-			event.reply('fromMain', {
-				command: 'sendOperators',
-				data: operators
-			})
-		}
 		if (msg.command === 'runOperator') {
 			const operator = msg.data
 			if (operator) {
+				event.reply('fromMain', {
+					command: 'runningOperator',
+					data: {}
+				})
 				scriptRunner.run(operator).then(() => {
 					console.log('Script has run, can hide the window')
 					winManager.toggleWindow()
@@ -22,9 +19,10 @@ function init(opManager, winManager, scriptRunner) {
 	})
 
 	winManager.triggerShow = () => {
+		opManager.load()
 		const msg = {
 			command: 'triggerShow',
-			data: {}
+			data: { operators: opManager.operators }
 		}
 		console.log('[MAIN => REND]:', msg.command, msg.data)
 		winManager.win.webContents.send('fromMain', msg)

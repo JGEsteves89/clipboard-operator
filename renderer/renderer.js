@@ -3,9 +3,7 @@ let operators = []
 // Listen for messages from the main process
 window.api.receive('fromMain', (msg) => {
 	console.log('[MAIN => REND]:', msg.command, msg.data)
-	if (msg.command === 'sendOperators') {
-		operators = msg.data
-	} else if (msg.command === 'triggerShow') {
+	if (msg.command === 'triggerShow') {
 		// clean the current input
 		const searchInput = document.getElementById('searchInput')
 		const results = document.getElementById('results')
@@ -18,6 +16,8 @@ window.api.receive('fromMain', (msg) => {
 		if (results) {
 			results.innerHTML = "" // optional: clear old results
 		}
+
+		operators = msg.data.operators
 	}
 })
 
@@ -79,12 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	})
 
-	if (operators.length === 0) {
-		window.api.send('toMain', {
-			command: 'getOperators',
-			data: null
-		})
-	}
 
 	// Initial render: empty
 	renderResult()

@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const { clipboard } = require('electron')
+const { pathToFileURL } = require('url')
 
 class ScriptRunner {
 	constructor(scriptsPath) {
@@ -15,12 +16,15 @@ class ScriptRunner {
 			console.log('There is no such script', scriptPath)
 			return
 		}
+		// this ensures that the script is not cached
+		const fileUrl = pathToFileURL(scriptPath).href + `?t=${Date.now()}`
+		const script = await import(fileUrl)
 
-		const script = require(scriptPath)
 		if (typeof script.run !== 'function') {
 			console.log('No exported async function run(rawData: string): string on', scriptPath)
 			return
 		}
+
 
 		console.log('Calling script.run()')
 		try {
