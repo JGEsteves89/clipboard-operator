@@ -5,7 +5,6 @@ const DEBUG = process.env.NODE_ENV === "development"
 const WIDTH = 350
 const HEIGHT = 300
 const OPERATIONS_PATH = path.join(app.getPath('userData'), 'operators.json')
-const SCRIPTS_DIR = path.join(app.getPath('userData'), 'scripts')
 
 if (DEBUG) {
 	try {
@@ -28,7 +27,7 @@ app.whenReady().then(() => {
 	const winManager = new WindowManager(WIDTH, HEIGHT, DEBUG)
 	const trayManager = new TrayManager(winManager)
 	const shortcuts = new Shortcuts(winManager)
-	const runner = new ScriptRunner(SCRIPTS_DIR)
+	const runner = new ScriptRunner(OPERATIONS_PATH, winManager)
 
 	trayManager.init()
 	shortcuts.init()

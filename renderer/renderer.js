@@ -1,4 +1,4 @@
-let operators = null;
+let operators = null
 
 // Listen for messages from the main process
 window.api.receive('fromMain', (msg) => {
@@ -6,7 +6,7 @@ window.api.receive('fromMain', (msg) => {
 	if (msg.command === 'triggerShow') {
 		// clean the current input
 		const searchInput = document.getElementById('searchInput')
-		const results = document.getElementById('results')
+		const results = document.getElementById('result')
 
 		if (searchInput) {
 			searchInput.value = ""
@@ -14,7 +14,8 @@ window.api.receive('fromMain', (msg) => {
 		}
 
 		if (results) {
-			results.innerHTML = "" // optional: clear old results
+			searchInput.value = ""
+			hideResult()
 		}
 
 		operators = msg.data.operators
@@ -38,10 +39,9 @@ const getBestResult = (input) => {
 	return filtered.length > 0 ? filtered[0] : undefined
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-	const renderListItem = (result) => {
-		// you can check all the icons in https://fonts.google.com/icons
-		return `\
+const renderListItem = (result) => {
+	// you can check all the icons in https://fonts.google.com/icons
+	return `\
 				<article class="article round p-2 text-sm">
 					<div class="row gap-2">
 						<i class="material-symbols-outlined">${result.icon}</i>
@@ -54,24 +54,35 @@ document.addEventListener("DOMContentLoaded", () => {
 						${result.aliases.map(a => `<button class="chip px-2 py-0.5 text-xs white">${a}</button>`).join('\n')}
 					</nav>
 				</article>`
-	}
+}
+
+const showResult = (result) => {
+	const resultHtml = document.getElementById('result')
+	resultHtml.innerHTML = renderListItem(result)
+	resultHtml.classList.add("has-result")
+}
+
+const hideResult = () => {
+	const resultHtml = document.getElementById('result')
+	resultHtml.classList.remove("has-result")
+	// remove content **after** transition ends
+	resultHtml.addEventListener("transitionend", function cleanup() {
+		if (!resultHtml.classList.contains("has-result")) {
+			resultHtml.innerHTML = ""
+		}
+		resultHtml.removeEventListener("transitionend", cleanup)
+	})
+}
+
+document.addEventListener("DOMContentLoaded", () => {
 
 	const searchInput = document.getElementById('searchInput')
-	const resultHtml = document.getElementById('result')
 
 	function renderResult(result) {
 		if (result) {
-			resultHtml.innerHTML = renderListItem(result)
-			resultHtml.classList.add("has-result")
+			showResult(result)
 		} else {
-			resultHtml.classList.remove("has-result")
-			// remove content **after** transition ends
-			resultHtml.addEventListener("transitionend", function cleanup() {
-				if (!resultHtml.classList.contains("has-result")) {
-					resultHtml.innerHTML = ""
-				}
-				resultHtml.removeEventListener("transitionend", cleanup)
-			})
+			hideResult(result)
 		}
 	}
 
@@ -89,10 +100,15 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Enter') {
 			const result = getBestResult(searchInput)
+
 			window.api.send('toMain', {
 				command: 'runOperator',
 				data: result
 			})
+
+			const resultHtml = document.getElementById('result')
+			searchInput.value = ""
+			resultHtml.innerHTML = ""
 		}
 	})
 

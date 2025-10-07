@@ -4,6 +4,12 @@ It’s lightweight, customizable, and designed for developers who frequently nee
 
 ---
 
+## 🖥️ Usage
+
+![Usage Demo](doc/video-usage.gif)
+
+---
+
 ## ✨ Features
 
 * Call up an input menu with a keyboard shortcut or tray icon.

@@ -13,35 +13,43 @@ class WindowManager {
 		this.enableEscapeKeyShortcut = null // overrided by shortkey
 	}
 
+	hide() {
+		console.log('Will hide window')
+		this.state = 'hide'
+		this.win.hide()
+
+		// release escape global short ckey
+		if (this.disableEscapeKeyShortcut) {
+			this.disableEscapeKeyShortcut()
+		}
+	}
+
+	show() {
+		console.log('Will show window')
+		this.state = 'show'
+
+		// trigger clean up and input focus
+		if (this.triggerShow) {
+			this.triggerShow()
+		}
+
+		this.win.show()
+		this.win.focus()
+
+		// make escape work to exit
+		if (this.enableEscapeKeyShortcut) {
+			this.enableEscapeKeyShortcut()
+		}
+	}
+
 	toggleWindow() {
 		if (!this.win) this.createWindow()
 
 		console.log('Togling window')
 		if (this.win.isVisible()) {
-			console.log('Will hide window')
-			this.state = 'hide'
-			this.win.hide()
-
-			// release escape global short ckey
-			if (this.disableEscapeKeyShortcut) {
-				this.disableEscapeKeyShortcut()
-			}
+			this.hide()
 		} else {
-			console.log('Will show window')
-			this.state = 'show'
-
-			// trigger clean up and input focus
-			if (this.triggerShow) {
-				this.triggerShow()
-			}
-
-			this.win.show()
-			this.win.focus()
-
-			// make escape work to exit
-			if (this.enableEscapeKeyShortcut) {
-				this.enableEscapeKeyShortcut()
-			}
+			this.show()
 		}
 	}
 
@@ -60,7 +68,7 @@ class WindowManager {
 			webPreferences: {
 				preload: path.join(__dirname, '../preload/preload.js'),
 				sandbox: process.env.NODE_ENV !== 'development',
-				contextIsolation: process.env.NODE_ENV !== 'development', // Already implied but ensure it's explicit
+				contextIsolation: true, // Already implied but ensure it's explicit
 				nodeIntegration: process.env.NODE_ENV === 'development' // Disable node integration
 			}
 		})
