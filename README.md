@@ -1,4 +1,5 @@
-An Electron-based **clipboard manager** that applies transformation operations to the current clipboard content.  
+# Clipboard Operator
+An Electron-based **clipboard manager** that applies JavaScript transformation operations to the current clipboard content.
 It’s lightweight, customizable, and designed for developers who frequently need to reformat or transform copied text.
 
 ---
@@ -94,15 +95,32 @@ Requirements:
 
 ## 🎯 Current Milestones
 
-* [X] Basic clipboard operations
-* [X] JSON-defined operators
-* [ ] Define json and operators folders 
-* [ ] Installations VS portable
-* [ ] Configurable keyboard shortcuts
-* [ ] Operator marketplace / sharing
-* [ ] Multi-platform packaging
-* [ ] Configure automatic release
-* [ ] Telemetry
+### Things that I need to do
+ - [X] Load the json with all the operators from the main
+ - [X] Pass the json operators to front end
+ - [X] On front end, trigger a enter or select to operate
+ - [X] Load the script from the operator
+ - [X] Get the current clipboard
+ - [X] Preform the operation
+ - [X] Same the result into clipboard
+  
+### Things that would be nice to do
+
+ - [X] Make the get of the jsons to be everytime it shows the window (for hot reload)
+ - [X] Remove the script from the cache so we can hot reload it
+ - [X] Add lint 
+ - [ ] script/validation on script.run(input) (security issue: Arbitrary Execution) 
+ - [ ] Error handling in messages
+ - [ ] Error handling when the script has some error
+ - [ ] Show processing for slow runners
+ - [ ] Show terminal output on the window
+
+### Long term
+ - [ ] Add Unit Tests
+ - [ ] Implement Logging System
+ - [ ] Add User Feedback Mechanisms
+ - [ ] Create Proper Build Pipeline
+ - [ ] Add Auto-updater
 
 ---
 

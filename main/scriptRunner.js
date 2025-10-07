@@ -34,7 +34,7 @@ class ScriptRunner {
 			console.log(input.substring(0, 300) + (input.length > 300 ? '\n...' : ''))
 			console.log('############')
 
-			const result = await script.run(input)  // 👈 await here
+			const result = await script.run(input)  // 👈 TODO: Dynamic Script Loading with Arbitrary Execution
 			if (typeof result === 'string') {
 
 				console.log('Returning script with:')
@@ -46,7 +46,7 @@ class ScriptRunner {
 				console.log('Script done, result copied to clipboard')
 
 				if (clipboard.readText() !== result) {
-					console.error('Something went wront when seeting the clipboard')
+					console.error('Something went wrong when seeting the clipboard')
 				}
 
 			} else {

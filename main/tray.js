@@ -13,8 +13,12 @@ class TrayManager {
 			{ label: 'Show', click: () => this.windowManager.toggleWindow() },
 			{ label: 'Quit', click: () => process.exit() }
 		])
-		this.tray.setToolTip('Copy to prompt')
+		this.tray.setToolTip('Clipboard Operator')
 		this.tray.setContextMenu(contextMenu)
+
+		this.tray.on('double-click', () => {
+			this.windowManager.toggleWindow()
+		})
 	}
 }
 

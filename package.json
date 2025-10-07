@@ -1,6 +1,6 @@
 {
-	"name": "copy-to-prompt",
-	"version": "1.0.0",
+	"name": "clipboard-operator",
+	"version": "0.0.1",
 	"description": "",
 	"main": "main/main.js",
 	"scripts": {

@@ -1,10 +1,11 @@
-const { app } = require('electron')
+const { app, dialog } = require('electron')
+const path = require('path')
 
 const DEBUG = process.env.NODE_ENV === "development"
 const WIDTH = 350
 const HEIGHT = 300
-const OPERATIONS_PATH = 'C:\\Users\\engjg\\dev\\copy-to-prompt\\operators.json'
-const SCRIPTS_DIR = 'C:\\Users\\engjg\\dev\\copy-to-prompt\\'
+const OPERATIONS_PATH = path.join(app.getPath('userData'), 'operators.json')
+const SCRIPTS_DIR = path.join(app.getPath('userData'), 'scripts')
 
 if (DEBUG) {
 	try {
@@ -51,4 +52,19 @@ app.on('window-all-closed', () => {
 app.on('will-quit', () => {
 	const Shortcuts = require('./shortcuts')
 	Shortcuts.unregisterAll()
+})
+
+process.on('uncaughtException', (error) => {
+	console.error('An uncaught error occurred:', error)
+
+	// Show a message box
+	dialog.showMessageBoxSync({
+		type: 'error',
+		title: 'Unexpected Error',
+		message: 'An unexpected error occurred. The app will close.',
+		detail: error.stack || error.message,
+	})
+
+	// Exit the app
+	app.exit(1)
 })

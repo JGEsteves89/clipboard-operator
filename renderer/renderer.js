@@ -22,8 +22,8 @@ window.api.receive('fromMain', (msg) => {
 	}
 })
 
-function getBestResult(input) {
-	if (!operators) return;
+const getBestResult = (input) => {
+	if (!operators) return
 	const query = input.value.toLowerCase()
 	// eslint-disable-next-line no-undef
 	const fuse = new Fuse(operators, {
@@ -39,7 +39,7 @@ function getBestResult(input) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	function renderListItem(result) {
+	const renderListItem = (result) => {
 		// you can check all the icons in https://fonts.google.com/icons
 		return `\
 				<article class="article round p-2 text-sm">

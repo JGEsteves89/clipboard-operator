@@ -2,8 +2,8 @@ const path = require('path')
 const fs = require('fs')
 
 class OperationsManager {
-	constructor(OPERATIONS_PATH) {
-		this.path = OPERATIONS_PATH
+	constructor(operationsJSONPath) {
+		this.path = operationsJSONPath
 		this.operators = []
 	}
 
@@ -20,8 +20,11 @@ class OperationsManager {
 			console.log('No operation json file was found in', this.path)
 			fs.writeFileSync(this.path, '[]')
 		}
-
-		this.operators = JSON.parse(fs.readFileSync(this.path).toString())
+		try {
+			this.operators = JSON.parse(fs.readFileSync(this.path).toString())
+		} catch (error) {
+			throw new Error('Could not parse the operators file: ' + this.path + '\n' + error.toString())
+		}
 	}
 }
 

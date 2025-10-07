@@ -16,7 +16,7 @@ class WindowManager {
 	toggleWindow() {
 		if (!this.win) this.createWindow()
 
-		console.log('Toogling window')
+		console.log('Togling window')
 		if (this.win.isVisible()) {
 			console.log('Will hide window')
 			this.state = 'hide'
@@ -55,14 +55,13 @@ class WindowManager {
 			resizable: false,
 			maximizable: false,
 			fullscreen: false,
-			frame: false,                    // frameless window
+			frame: false,
 			transparent: true,
-			// Windows-specific overrides:
-			// backgroundColor: '#00000000',   // fully transparent background
-			// backgroundMaterial: 'acrylic',  // Windows 11 backdrop effect
 			webPreferences: {
 				preload: path.join(__dirname, '../preload/preload.js'),
-				sandbox: false,
+				sandbox: process.env.NODE_ENV !== 'development',
+				contextIsolation: process.env.NODE_ENV !== 'development', // Already implied but ensure it's explicit
+				nodeIntegration: process.env.NODE_ENV === 'development' // Disable node integration
 			}
 		})
 
