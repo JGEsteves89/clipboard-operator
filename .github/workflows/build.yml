@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'  # Run when a tag like v0.0.2 is pushed
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
