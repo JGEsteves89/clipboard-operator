@@ -54,6 +54,6 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         # The EXE produced by electron-builder includes version in the filename
-        asset_path: dist/*.exe
+        asset_path: "dist/Clipboard Operator ${{ env.VERSION }}.exe"
         asset_name: ClipboardOperator.exe
         asset_content_type: application/vnd.microsoft.portable-executable
