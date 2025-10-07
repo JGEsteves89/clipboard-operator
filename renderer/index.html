@@ -4,10 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Testt</title>
 	<link href="https://cdn.jsdelivr.net/npm/beercss@3.12.6/dist/cdn/beer.min.css" rel="stylesheet">
-	<script type="module"
-		src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
 	<script type="module"
 		src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
@@ -17,14 +14,13 @@
 </head>
 
 <body>
-	<div class="search-container">
+	<div class="wrap" id="wrap">
 		<div class="field large prefix round fill active">
 			<i class="front">search</i>
 			<input id="searchInput" placeholder="Search operator..." autocomplete="on">
-			<ul id="results" class="list border"></ul>
 		</div>
+		<div id="results" class="list border"></div>
 	</div>
-
 </body>
 
 </html>

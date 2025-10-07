@@ -24,7 +24,7 @@ const ScriptRunner = require('./scriptRunner')
 
 app.whenReady().then(() => {
 	const opManager = new OperationsManager(OPERATIONS_PATH)
-	const winManager = new WindowManager(WIDTH, HEIGHT)
+	const winManager = new WindowManager(WIDTH, HEIGHT, DEBUG)
 	const trayManager = new TrayManager(winManager)
 	const shortcuts = new Shortcuts(winManager)
 	const runner = new ScriptRunner(SCRIPTS_DIR)

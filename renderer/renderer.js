@@ -1,4 +1,4 @@
-let operators = []
+let operators = null;
 
 // Listen for messages from the main process
 window.api.receive('fromMain', (msg) => {
@@ -18,10 +18,12 @@ window.api.receive('fromMain', (msg) => {
 		}
 
 		operators = msg.data.operators
+		console.log('Loaded', operators.length, 'operators')
 	}
 })
 
 function getBestResult(input) {
+	if (!operators) return;
 	const query = input.value.toLowerCase()
 	// eslint-disable-next-line no-undef
 	const fuse = new Fuse(operators, {
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function renderListItem(result) {
 		// you can check all the icons in https://fonts.google.com/icons
 		return `\
-				<article class="round p-2 text-sm">
+				<article class="round p-2 text-sm blur">
 					<div class="row gap-2">
 						<i class="material-symbols-outlined">${result.icon}</i>
 						<div class="max">
@@ -79,6 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	})
 
+	if (!operators) {
+		window.api.send('toMain', {
+			command: 'getOperators',
+			data: {}
+		})
+	}
 
 	// Initial render: empty
 	renderResult()

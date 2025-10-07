@@ -16,6 +16,15 @@ function init(opManager, winManager, scriptRunner) {
 				})
 			}
 		}
+		if (msg.command === 'getOperators') {
+			opManager.load()
+			const reply = {
+				command: 'triggerShow',
+				data: { operators: opManager.operators }
+			}
+			console.log('[MAIN => REND]:', reply.command, reply.data)
+			event.reply('fromMain', reply)
+		}
 	})
 
 	winManager.triggerShow = () => {

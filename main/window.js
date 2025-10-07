@@ -2,11 +2,12 @@ const { BrowserWindow } = require('electron')
 const path = require('path')
 
 class WindowManager {
-	constructor(width, height) {
+	constructor(width, height, debug) {
 		this.win = null
 		this.state = 'start'
 		this.width = width
 		this.height = height
+		this.debug = debug
 		this.triggerShow = null // overrided by ipc
 		this.disableEscapeKeyShortcut = null  // overrided by shortkey
 		this.enableEscapeKeyShortcut = null // overrided by shortkey
@@ -51,17 +52,23 @@ class WindowManager {
 			show: false,
 			alwaysOnTop: true,
 			skipTaskbar: true,
-			transparent: true,
-			resizable: false,
-			frame: false,
+			resizable: true,
+			maximizable: false,
+			fullscreen: false,
+			// Windows-specific overrides:
+			backgroundColor: '#00000000',   // fully transparent background
+			backgroundMaterial: 'acrylic',  // Windows 11 backdrop effect
+			frame: false,                    // frameless window
 			webPreferences: {
-				preload: path.join(__dirname, '../preload/preload.js')
+				preload: path.join(__dirname, '../preload/preload.js'),
+				sandbox: false,
 			}
 		})
 
 		this.win.loadFile('renderer/index.html')
 
 		this.win.on('blur', () => {
+			if (this.debug) return
 			if (this.win && this.win.isVisible()) this.toggleWindow()
 		})
 

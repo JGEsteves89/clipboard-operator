@@ -17,3 +17,4 @@
  - [ ] Error handling when the script has some error
  - [ ] Show processing for slow runners
  - [ ] Show terminal output on the window
+ - [ ] Add lint 
