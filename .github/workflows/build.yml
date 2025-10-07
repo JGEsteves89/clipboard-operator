@@ -23,9 +23,10 @@ jobs:
 
     - name: Read app version
       id: get_version
+      shell: pwsh
       run: |
-        VERSION=$(node -p "require('./package.json').version")
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        $version = node -p "require('./package.json').version"
+        echo "VERSION=$version" >> $env:GITHUB_ENV
 
     - name: Build Windows portable EXE
       run: npx electron-builder --win portable
@@ -46,6 +47,6 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         # The EXE produced by electron-builder includes version in the filename
-        asset_path: dist/Clipboard\ Operator\ ${{ env.VERSION }}-portable.exe
+        asset_path: dist/Clipboard\ Operator\ ${{ env.VERSION }}.exe
         asset_name: ClipboardOperator.exe
         asset_content_type: application/vnd.microsoft.portable-executable
