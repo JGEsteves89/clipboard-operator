@@ -57,3 +57,5 @@ jobs:
         asset_path: "dist/Clipboard Operator ${{ env.VERSION }}.exe"
         asset_name: ClipboardOperator.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
