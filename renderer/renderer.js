@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function renderListItem(result) {
 		// you can check all the icons in https://fonts.google.com/icons
 		return `\
-				<article class="round p-2 text-sm blur">
+				<article class="article round p-2 text-sm">
 					<div class="row gap-2">
 						<i class="material-symbols-outlined">${result.icon}</i>
 						<div class="max">
@@ -51,25 +51,40 @@ document.addEventListener("DOMContentLoaded", () => {
 						</div>
 					</div>
 					<nav class="flex flex-wrap gap-1 mt-1">
-						${result.aliases.map(a => `<button class="chip px-2 py-0.5 text-xs">${a}</button>`).join('\n')}
+						${result.aliases.map(a => `<button class="chip px-2 py-0.5 text-xs white">${a}</button>`).join('\n')}
 					</nav>
 				</article>`
 	}
 
 	const searchInput = document.getElementById('searchInput')
-	const results = document.getElementById('results')
+	const resultHtml = document.getElementById('result')
 
 	function renderResult(result) {
-		results.innerHTML = ""
 		if (result) {
-			results.innerHTML = renderListItem(result)
+			resultHtml.innerHTML = renderListItem(result)
+			resultHtml.classList.add("has-result")
+		} else {
+			resultHtml.classList.remove("has-result")
+			// remove content **after** transition ends
+			resultHtml.addEventListener("transitionend", function cleanup() {
+				if (!resultHtml.classList.contains("has-result")) {
+					resultHtml.innerHTML = ""
+				}
+				resultHtml.removeEventListener("transitionend", cleanup)
+			})
 		}
 	}
 
+	let debounceTimer = null
 	searchInput.addEventListener('input', () => {
+		clearTimeout(debounceTimer)
+		debounceTimer = setTimeout(searchAndRender, 200) // 200ms delay
+	})
+
+	function searchAndRender() {
 		const bestResult = getBestResult(searchInput)
 		renderResult(bestResult)
-	})
+	}
 
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Enter') {

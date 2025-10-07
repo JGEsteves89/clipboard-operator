@@ -52,13 +52,14 @@ class WindowManager {
 			show: false,
 			alwaysOnTop: true,
 			skipTaskbar: true,
-			resizable: true,
+			resizable: false,
 			maximizable: false,
 			fullscreen: false,
-			// Windows-specific overrides:
-			backgroundColor: '#00000000',   // fully transparent background
-			backgroundMaterial: 'acrylic',  // Windows 11 backdrop effect
 			frame: false,                    // frameless window
+			transparent: true,
+			// Windows-specific overrides:
+			// backgroundColor: '#00000000',   // fully transparent background
+			// backgroundMaterial: 'acrylic',  // Windows 11 backdrop effect
 			webPreferences: {
 				preload: path.join(__dirname, '../preload/preload.js'),
 				sandbox: false,
