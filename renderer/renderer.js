@@ -28,12 +28,24 @@ window.api.receive('fromMain', (msg) => {
 	if (msg.command === 'scriptLog') {
 		addLogLine(msg.data.text)
 	}
+	if (msg.command === 'scriptLogToken') {
+		appendToLiveLine(msg.data.token)
+	}
 })
 
 function showLogPanel() {
 	const resultEl = document.getElementById('result')
 	resultEl.innerHTML = '<div id="log-lines"></div>'
 	resultEl.classList.add('has-result')
+}
+
+function updateOpacities(container) {
+	const all = container.querySelectorAll('.log-line')
+	const total = all.length
+	all.forEach((el, i) => {
+		const age = total - 1 - i  // 0 = newest (bottom)
+		el.style.opacity = Math.max(0.07, 1 - age * 0.18)
+	})
 }
 
 function addLogLine(text) {
@@ -48,20 +60,57 @@ function addLogLine(text) {
 	div.className = 'log-line'
 	div.textContent = '› ' + display
 	div.style.opacity = '0'
-	container.prepend(div)
+	container.appendChild(div)
 
-	// Prune excess DOM nodes (oldest lines are at the bottom)
-	const lines = () => container.querySelectorAll('.log-line')
-	if (lines().length > MAX_LOG_LINES) container.removeChild(container.lastChild)
+	// Prune excess DOM nodes (oldest lines are at the top)
+	if (container.querySelectorAll('.log-line').length > MAX_LOG_LINES) {
+		container.removeChild(container.firstChild)
+	}
 
 	// Double rAF: first frame renders at opacity 0, second fires the CSS transition
-	requestAnimationFrame(() => requestAnimationFrame(() => {
-		const all = lines()
-		all.forEach((el, i) => {
-			const age = i  // 0 = newest (top)
-			el.style.opacity = Math.max(0.07, 1 - age * 0.18)
-		})
-	}))
+	requestAnimationFrame(() => requestAnimationFrame(() => updateOpacities(container)))
+}
+
+function appendToLiveLine(token) {
+	const container = document.getElementById('log-lines')
+	if (!container) return
+
+	const parts = token.split('\n')
+	let needsOpacityUpdate = false
+
+	parts.forEach((part, i) => {
+		if (i > 0) {
+			// Newline boundary — commit the current live line
+			const current = container.querySelector('.log-line.live')
+			if (current) current.classList.remove('live')
+			needsOpacityUpdate = true
+		}
+
+		if (!part) return  // empty segment (token was just "\n", or starts/ends with one)
+
+		let liveLine = container.querySelector('.log-line.live')
+		if (!liveLine) {
+			liveLine = document.createElement('div')
+			liveLine.className = 'log-line live'
+			liveLine.dataset.accumulated = ''
+			liveLine.style.opacity = '0'
+			container.appendChild(liveLine)
+			needsOpacityUpdate = true
+
+			if (container.querySelectorAll('.log-line').length > MAX_LOG_LINES) {
+				container.removeChild(container.firstChild)
+			}
+		}
+
+		const accumulated = (liveLine.dataset.accumulated ?? '') + part
+		liveLine.dataset.accumulated = accumulated
+		const display = accumulated.length > 70 ? '…' + accumulated.slice(-67) : accumulated
+		liveLine.textContent = '› ' + display
+	})
+
+	if (needsOpacityUpdate) {
+		requestAnimationFrame(() => requestAnimationFrame(() => updateOpacities(container)))
+	}
 }
 
 const getBestResult = (input) => {

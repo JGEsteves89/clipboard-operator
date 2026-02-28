@@ -99,6 +99,7 @@ export async function run(input, operator) {
 				{ role: 'user', content: userMessage },
 			],
 			max_tokens: 1000,
+			stream: true,
 		}),
 	})
 
@@ -109,13 +110,34 @@ export async function run(input, operator) {
 		throw new Error(`OpenRouter API error ${response.status}: ${body}`)
 	}
 
-	const data = await response.json()
-	const rawContent = data.choices[0].message.content
-	console.log('[SCRIPT] raw response:', rawContent)
+	const onToken = operator.onToken
+	const reader = response.body.getReader()
+	const decoder = new TextDecoder()
+	let buffer = ''
+	let fullContent = ''
 
-	const parsed = parseResult(rawContent)
-	const matched = rawContent.includes('<output_start>') && rawContent.includes('<output_end>')
-	console.log('[SCRIPT] pattern matched:', matched, '| parsed result:', parsed)
+	while (true) {
+		const { done, value } = await reader.read()
+		if (done) break
+		buffer += decoder.decode(value, { stream: true })
 
-	return parsed
+		const lines = buffer.split('\n')
+		buffer = lines.pop()  // keep any incomplete last line
+
+		for (const line of lines) {
+			if (!line.startsWith('data: ')) continue
+			const data = line.slice(6).trim()
+			if (data === '[DONE]') continue
+			try {
+				const parsed = JSON.parse(data)
+				const token = parsed.choices?.[0]?.delta?.content ?? ''
+				if (token) {
+					fullContent += token
+					if (onToken) onToken(token)
+				}
+			} catch { /* skip malformed SSE lines */ }
+		}
+	}
+
+	return parseResult(fullContent)
 }

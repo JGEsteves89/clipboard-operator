@@ -78,7 +78,8 @@ class ScriptRunner {
 			console.log(input.substring(0, 300) + (input.length > 300 ? '\n...' : ''))
 			console.log('############')
 
-			const result = await script.run(input, { ...operator, _workspaceDir: path.dirname(this.operatorsPath) })
+			const onToken = (token) => this._sendToRenderer({ command: 'scriptLogToken', data: { token } })
+			const result = await script.run(input, { ...operator, _workspaceDir: path.dirname(this.operatorsPath), onToken })
 			if (typeof result === 'string') {
 
 				console.log('Returning script with:')
