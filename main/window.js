@@ -8,9 +8,9 @@ class WindowManager {
 		this.width = width
 		this.height = height
 		this.debug = debug
-		this.triggerShow = null // overrided by ipc
-		this.disableEscapeKeyShortcut = null  // overrided by shortkey
-		this.enableEscapeKeyShortcut = null // overrided by shortkey
+		this.triggerShow = null // overridden by ipc
+		this.disableEscapeKeyShortcut = null  // overridden by shortcuts
+		this.enableEscapeKeyShortcut = null // overridden by shortcuts
 	}
 
 	hide() {
@@ -18,7 +18,7 @@ class WindowManager {
 		this.state = 'hide'
 		this.win.hide()
 
-		// release escape global short ckey
+		// release escape global shortcut key
 		if (this.disableEscapeKeyShortcut) {
 			this.disableEscapeKeyShortcut()
 		}
@@ -45,7 +45,7 @@ class WindowManager {
 	toggleWindow() {
 		if (!this.win) this.createWindow()
 
-		console.log('Togling window')
+		console.log('Toggling window')
 		if (this.win.isVisible()) {
 			this.hide()
 		} else {
@@ -69,7 +69,7 @@ class WindowManager {
 				preload: path.join(__dirname, '../preload/preload.js'),
 				sandbox: process.env.NODE_ENV !== 'development',
 				contextIsolation: true, // Already implied but ensure it's explicit
-				nodeIntegration: process.env.NODE_ENV === 'development' // Disable node integration
+				nodeIntegration: false
 			}
 		})
 

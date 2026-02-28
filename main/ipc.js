@@ -14,11 +14,13 @@ function init(opManager, winManager, scriptRunner) {
 				scriptRunner.run(operator).then(() => {
 					console.log('Script has run, can hide the window')
 					winManager.toggleWindow()
+				}).catch((err) => {
+					console.error('Unhandled error from scriptRunner:', err)
+					winManager.hide()
 				})
 			}
 		}
 		if (msg.command === 'getOperators') {
-			opManager.load()
 			const reply = {
 				command: 'triggerShow',
 				data: { operators: opManager.operators }

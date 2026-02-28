@@ -14,7 +14,6 @@ window.api.receive('fromMain', (msg) => {
 		}
 
 		if (results) {
-			searchInput.value = ""
 			hideResult()
 		}
 

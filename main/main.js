@@ -34,7 +34,6 @@ app.whenReady().then(() => {
 	ipc.init(opManager, winManager, runner)
 
 	winManager.toggleWindow()
-	opManager.load()
 })
 
 app.on('activate', () => {
@@ -49,7 +48,6 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
-	const Shortcuts = require('./shortcuts')
 	Shortcuts.unregisterAll()
 })
 

@@ -1,4 +1,4 @@
-const { Tray, Menu } = require('electron')
+const { Tray, Menu, app } = require('electron')
 const path = require('path')
 
 class TrayManager {
@@ -11,7 +11,7 @@ class TrayManager {
 		this.tray = new Tray(path.join(__dirname, '../icon.ico'))
 		const contextMenu = Menu.buildFromTemplate([
 			{ label: 'Show', click: () => this.windowManager.toggleWindow() },
-			{ label: 'Quit', click: () => process.exit() }
+			{ label: 'Quit', click: () => app.quit() }
 		])
 		this.tray.setToolTip('Clipboard Operator')
 		this.tray.setContextMenu(contextMenu)
