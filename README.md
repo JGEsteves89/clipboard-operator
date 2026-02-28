@@ -1,166 +1,212 @@
 # Clipboard Operator
-An Electron-based **clipboard manager** that applies JavaScript transformation operations to the current clipboard content.
-It’s lightweight, customizable, and designed for developers who frequently need to reformat or transform copied text.
+
+An Electron-based **clipboard manager** that applies JavaScript transformation operations to clipboard content.
+Lightweight, customizable, and designed for developers who frequently need to reformat or transform copied text — including AI-powered transformations via LLM APIs.
 
 ---
 
-## 🖥️ Usage
+## Usage
 
 ![Usage Demo](doc/video-usage.gif)
 
 ---
 
-## ✨ Features
+## Features
 
-* Call up an input menu with a keyboard shortcut or tray icon.
-* Apply custom transformation operations to clipboard content.
-* Define your own operators via JSON + JavaScript scripts.
-* Extendable and developer-friendly.
-
----
-
-## 🚀 How to Use
-
-1. Open the input menu with the shortcut <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd> or by clicking the tray icon.  
-2. Select the desired operation and press <kbd>Enter</kbd>.  
-3. The clipboard content is instantly updated, and the menu closes automatically.  
+- Call up an input menu with a keyboard shortcut or tray icon.
+- Apply custom transformation operations to clipboard content.
+- Define operators via a JSON config file pointing to JavaScript scripts.
+- Supports LLM-powered operators using any OpenRouter-compatible model.
+- Ships with an `examples/` folder to get started quickly.
 
 ---
 
-## ⚙️ How Operators Work
+## How to Use
 
-Operators are defined in a JSON file, for example:
+1. Open the input menu with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd> or by clicking the tray icon.
+2. Select an operation and press <kbd>Enter</kbd>.
+3. The clipboard content is instantly updated and the menu closes.
+
+---
+
+## Getting Started
+
+On first run, the app creates a `workspace/` folder next to the executable (or in the project root when running from source). This folder is your personal configuration space.
+
+### Folder structure
+
+```
+workspace/
+  operators.json    ← defines your operators
+  config.json       ← optional: API keys and model settings
+```
+
+The `examples/` folder in the repo contains ready-to-use operators and scripts you can copy into your workspace.
+
+---
+
+## Defining Operators
+
+Operators are listed in `workspace/operators.json`. Each entry points to a JavaScript script:
+
+```json
+[
+  {
+    "operator": "To Pascal Case",
+    "description": "Converts clipboard text to PascalCase",
+    "icon": "text_fields",
+    "aliases": ["pascal", "PascalCase"],
+    "script": "./examples/to-pascal-case.js"
+  },
+  {
+    "operator": "Fix Grammar",
+    "description": "Fixes grammar and spelling using AI",
+    "icon": "spellcheck",
+    "aliases": ["grammar", "fix", "spelling"],
+    "script": "./examples/openrouter-api-call.js",
+    "instruction": "Fix any grammar and spelling mistakes. Keep the same tone and style."
+  },
+  {
+    "operator": "Proofread",
+    "description": "Proofreads text and suggests corrections using AI",
+    "icon": "rate_review",
+    "aliases": ["proofread", "review", "check"],
+    "script": "./examples/openrouter-api-call.js",
+    "instruction": "Proofread the text. Fix spelling, grammar, punctuation, and awkward phrasing. Keep the original meaning and tone intact. Return only the corrected text."
+  }
+]
+```
+
+---
+
+## Writing a Script
+
+Each script exports an async `run` function that receives the clipboard content and returns the transformed result:
+
+```javascript
+export async function run(input) {
+    return input.trim().toUpperCase();
+}
+```
+
+### Example: To Pascal Case
+
+[examples/to-pascal-case.js](examples/to-pascal-case.js)
+
+```javascript
+export async function run(input) {
+    return input
+        .trim()
+        .split(/[\s_\-]+/)
+        .filter(word => word.length > 0)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join('');
+}
+```
+
+Input: `"hello world"` → Output: `"HelloWorld"`
+Input: `"some_variable_name"` → Output: `"SomeVariableName"`
+
+---
+
+## LLM-Powered Operators
+
+For AI-powered transformations, use the shared [examples/openrouter-api-call.js](examples/openrouter-api-call.js) script. It calls the [OpenRouter](https://openrouter.ai/) API with any model you configure.
+
+### 1. Add your API key
+
+Create `workspace/config.json`:
 
 ```json
 {
-  "operator": "Escape path",
-  "aliases": ["escape"],
-  "description": "Convert any path like C:\\Users\\me to C:\\\\Users\\\\me",
-  "icon": "folder_code",
-  "script": "escape_path.js"
-},
+  "OPENROUTER_API_KEY": "sk-or-...",
+  "model": "x-ai/grok-4-fast"
+}
+```
+
+You can also set `OPENROUTER_API_KEY` as an environment variable instead.
+
+### 2. Add operators with an `instruction` field
+
+The `instruction` field in `operators.json` tells the LLM what to do with the clipboard text:
+
+```json
 {
-  "operator": "Toggle wslpath",
-  "aliases": ["wsl"],
-  "description": "Toggle WSL Linux <=> Windows paths",
-  "icon": "rule_folder",
-  "script": "toggle_wslpath.js"
+  "operator": "Fix Grammar",
+  "description": "Fixes grammar and spelling using AI",
+  "icon": "spellcheck",
+  "aliases": ["grammar", "fix"],
+  "script": "./examples/openrouter-api-call.js",
+  "instruction": "Fix any grammar and spelling mistakes. Keep the same tone and style."
 }
 ```
 
-Each operator points to a JavaScript file with a standardized structure:
+Multiple operators can reuse the same script — just change the `instruction`:
 
-```javascript
-export async function run(rawData) {
-    const transformedData = yourFunction(rawData);
-    return transformedData;
+```json
+{
+  "operator": "Proofread",
+  "description": "Proofreads text and suggests corrections using AI",
+  "icon": "rate_review",
+  "aliases": ["proofread", "review"],
+  "script": "./examples/openrouter-api-call.js",
+  "instruction": "Proofread the text. Fix spelling, grammar, punctuation, and awkward phrasing. Keep the original meaning and tone intact. Return only the corrected text."
 }
-```
-
-For example:
-
-```javascript
-// escape_path.js
-export async function run(rawData) {
-    return rawData.replaceAll('\\', '\\\\');
-}
-```
-
-## 📦 Installation (from source code)
-
-```bash
-# Clone the repository
-git clone {TODO}
-cd clipboard-operator
-
-# Install dependencies
-npm install
-
-# Run the app
-npm start
 ```
 
 ---
 
-## Development
+## Installation (from source)
 
 ```bash
-# Start in development mode with hot reload
-npm run dev
+git clone <repo-url>
+cd clipboard-operator
 
-# Build the app for distribution
-npm run build
+npm install
+npm start
 ```
 
 Requirements:
 
-* [Node.js (>= 18)](https://nodejs.org/)
-* [Electron](https://www.electronjs.org/)
+- [Node.js (>= 18)](https://nodejs.org/)
+- [Electron](https://www.electronjs.org/)
+
+### Development
+
+```bash
+# Start with hot reload
+npm run dev
+
+# Build for distribution
+npm run build
+```
 
 ---
 
-## 🎯 Current Milestones
+## FAQ
 
-### Things that I need to do
- - [X] Load the json with all the operators from the main
- - [X] Pass the json operators to front end
- - [X] On front end, trigger a enter or select to operate
- - [X] Load the script from the operator
- - [X] Get the current clipboard
- - [X] Preform the operation
- - [X] Same the result into clipboard
-  
-### Things that would be nice to do
+**Q: Can I define my own operators?**
+A: Yes. Add entries to `workspace/operators.json` and create a script that exports a `run` function. You can also reuse the LLM script with a custom `instruction`.
 
- - [X] Make the get of the jsons to be everytime it shows the window (for hot reload)
- - [X] Remove the script from the cache so we can hot reload it
- - [X] Add lint 
- - [ ] script/validation on script.run(input) (security issue: Arbitrary Execution) 
- - [ ] Error handling in messages
- - [ ] Error handling when the script has some error
- - [ ] Show processing for slow runners
- - [ ] Show terminal output on the window
+**Q: Does it work on Linux/Mac?**
+A: Electron is cross-platform. Tested primarily on Windows.
 
-### Long term
- - [ ] Add Unit Tests
- - [ ] Implement Logging System
- - [ ] Add User Feedback Mechanisms
- - [ ] Create Proper Build Pipeline
- - [ ] Add Auto-updater
+**Q: Which LLM models are supported?**
+A: Any model available on [OpenRouter](https://openrouter.ai/models). Set the model name in `workspace/config.json`.
 
 ---
 
-## 🐛 Issues
-
-Found a bug? Open an issue
-and include:
-* Steps to reproduce
-* Expected behaviour
-* Actual behaviour
-* System information (OS, Node, Electron version)
-
----
-
-## ❓ FAQ
-
-**Q: Can I define my own operators?**  
-A: Yes! Just add them to the operators JSON and create a script with a `run` function.
-**Q: Does it work on Linux/Mac?**  
-A: Yes, Electron apps are cross-platform. Tested primarily on Windows for now.
-
----
-
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome!
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -m 'Add feature'`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
+3. Commit your changes
+4. Open a Pull Request
 
 ---
 
-## 📄 License
+## License
 
-MIT License – feel free to use, modify, and distribute.
+MIT License — feel free to use, modify, and distribute.
