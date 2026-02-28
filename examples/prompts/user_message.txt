@@ -1,0 +1,5 @@
+INPUT_A:
+{{inputText}}
+
+INPUT_B:
+{{instruction}}

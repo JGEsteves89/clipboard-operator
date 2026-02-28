@@ -1,0 +1,43 @@
+{
+	"name": "clipboard-operator",
+	"version": "0.0.1",
+	"description": "Clipboard Operator",
+	"main": "main/main.js",
+	"scripts": {
+		"start": "electron .",
+		"dev": "cross-env NODE_ENV=development electron .",
+		"lint": "eslint . --ext .js,.mjs,.cjs",
+		"lint:fix": "eslint . --ext .js,.mjs,.cjs --fix"
+	},
+	"keywords": [],
+	"author": "je",
+	"build": {
+		"appId": "io.github.jgesteves89.clipboardoperator",
+		"productName": "Clipboard Operator",
+		"files": [
+			"main/**/*",
+			"renderer/**/*",
+			"preload/**/*",
+			"examples/**/*",
+			"node_modules/**/*",
+			"icon.ico",
+			"package.json"
+		],
+		"win": {
+			"target": "portable"
+		}
+	},
+	"license": "ISC",
+	"devDependencies": {
+		"@eslint/js": "^9.35.0",
+		"cross-env": "^10.0.0",
+		"electron": "^38.1.1",
+		"electron-builder": "^26.0.12",
+		"electron-reloader": "^1.2.3",
+		"eslint": "^9.35.0",
+		"globals": "^16.4.0"
+	},
+	"dependencies": {
+		"fuse.js": "^7.1.0"
+	}
+}

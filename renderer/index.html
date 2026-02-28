@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="./beer.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+	<script src="../node_modules/fuse.js/dist/fuse.min.js"></script>
+	<link href="./style.css" rel="stylesheet">
+	<script type="module" src="./renderer.js"></script>
+</head>
+
+<body>
+	<div class="wrap" id="wrap">
+		<div class="search-row">
+			<div id="searchContainer" class="field large prefix round fill active">
+				<i>search</i>
+				<input id="searchInput" placeholder="Search operator..." autocomplete="on">
+			</div>
+			<button id="openFolderBtn" class="circle transparent" title="Open operators folder">
+				<i>folder_open</i>
+			</button>
+		</div>
+		<div id="result" class="result"></div>
+	</div>
+</body>
+
+</html>

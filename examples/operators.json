@@ -1,0 +1,25 @@
+[
+  {
+    "operator": "To Pascal Case",
+    "description": "Converts clipboard text to PascalCase",
+    "icon": "text_fields",
+    "aliases": ["pascal", "PascalCase"],
+    "script": "./examples/to-pascal-case.js"
+  },
+  {
+    "operator": "Fix Grammar",
+    "description": "Fixes grammar and spelling using AI",
+    "icon": "spellcheck",
+    "aliases": ["grammar", "fix", "spelling"],
+    "script": "./examples/openrouter-api-call.js",
+    "instruction": "Fix any grammar and spelling mistakes. Keep the same tone and style."
+  },
+  {
+    "operator": "Proofread",
+    "description": "Proofreads text and suggests corrections using AI",
+    "icon": "rate_review",
+    "aliases": ["proofread", "review", "check"],
+    "script": "./examples/openrouter-api-call.js",
+    "instruction": "Proofread the text. Fix spelling, grammar, punctuation, and awkward phrasing. Keep the original meaning and tone intact. Return only the corrected text."
+  }
+]
