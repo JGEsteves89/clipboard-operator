@@ -16,36 +16,6 @@ class ScriptRunner {
 	}
 
 	async run(operator) {
-		console.log('Running script operator', operator.operator)
-
-		const absolutePath = operator.script
-		const relativeToExe = path.resolve(operator.script)
-		const relativeOperators = path.resolve(path.join(path.dirname(this.operatorsPath), operator.script))
-
-		let scriptPath = null
-
-		for (const candidate of [absolutePath, relativeToExe, relativeOperators]) {
-			if (fs.existsSync(candidate)) {
-				scriptPath = candidate
-				break
-			}
-		}
-
-		if (!scriptPath) {
-			this.winManager.hide()
-			dialog.showMessageBoxSync({
-				type: 'error',
-				title: 'Script does not exist',
-				message: 'The script you are trying to run could not be found',
-				detail: "Checked paths:\n " + [absolutePath, relativeToExe, relativeOperators].join('\n'),
-			})
-
-			console.log('There is no such script:\n', [absolutePath, relativeToExe, relativeOperators].join('\n'))
-			return
-		}
-
-		console.log('Preparing to run:', scriptPath)
-
 		this._sendToRenderer({ command: 'scriptStart', data: { operatorName: operator.operator } })
 
 		const origLog = console.log
@@ -63,6 +33,26 @@ class ScriptRunner {
 		console.warn = (...args) => capture('[warn]', ...args)
 
 		try {
+			console.log('Running script operator', operator.operator)
+
+			const absolutePath = operator.script
+			const relativeToExe = path.resolve(operator.script)
+			const relativeOperators = path.resolve(path.join(path.dirname(this.operatorsPath), operator.script))
+
+			let scriptPath = null
+
+			for (const candidate of [absolutePath, relativeToExe, relativeOperators]) {
+				if (fs.existsSync(candidate)) {
+					scriptPath = candidate
+					break
+				}
+			}
+
+			if (!scriptPath) {
+				console.log('There is no such script:\n', [absolutePath, relativeToExe, relativeOperators].join('\n'))
+				throw new Error('Script not found. Checked paths:\n' + [absolutePath, relativeToExe, relativeOperators].join('\n'))
+			}
+
 			// this ensures that the script is not cached
 			const fileUrl = pathToFileURL(scriptPath).href + `?t=${Date.now()}`
 			const script = await import(fileUrl)

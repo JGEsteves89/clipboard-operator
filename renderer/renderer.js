@@ -35,7 +35,7 @@ window.api.receive('fromMain', (msg) => {
 
 function showLogPanel() {
 	const resultEl = document.getElementById('result')
-	resultEl.innerHTML = '<div id="log-lines"></div>'
+	resultEl.innerHTML = '<div id="log-lines"></div><div id="thinking-dots"><span></span><span></span><span></span></div>'
 	resultEl.classList.add('has-result')
 }
 
