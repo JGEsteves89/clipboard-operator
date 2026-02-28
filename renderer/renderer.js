@@ -1,5 +1,7 @@
 let operators = null
 
+const MAX_LOG_LINES = 7
+
 // Listen for messages from the main process
 window.api.receive('fromMain', (msg) => {
 	console.log('[MAIN => REND]:', msg.command, msg.data)
@@ -20,7 +22,47 @@ window.api.receive('fromMain', (msg) => {
 		operators = msg.data.operators
 		console.log('Loaded', operators.length, 'operators')
 	}
+	if (msg.command === 'scriptStart') {
+		showLogPanel()
+	}
+	if (msg.command === 'scriptLog') {
+		addLogLine(msg.data.text)
+	}
 })
+
+function showLogPanel() {
+	const resultEl = document.getElementById('result')
+	resultEl.innerHTML = '<div id="log-lines"></div>'
+	resultEl.classList.add('has-result')
+}
+
+function addLogLine(text) {
+	if (/^#+$/.test(text.trim())) return  // filter ############ lines
+
+	const container = document.getElementById('log-lines')
+	if (!container) return
+
+	const display = text.length > 72 ? text.slice(0, 69) + '…' : text
+
+	const div = document.createElement('div')
+	div.className = 'log-line'
+	div.textContent = '› ' + display
+	div.style.opacity = '0'
+	container.prepend(div)
+
+	// Prune excess DOM nodes (oldest lines are at the bottom)
+	const lines = () => container.querySelectorAll('.log-line')
+	if (lines().length > MAX_LOG_LINES) container.removeChild(container.lastChild)
+
+	// Double rAF: first frame renders at opacity 0, second fires the CSS transition
+	requestAnimationFrame(() => requestAnimationFrame(() => {
+		const all = lines()
+		all.forEach((el, i) => {
+			const age = i  // 0 = newest (top)
+			el.style.opacity = Math.max(0.07, 1 - age * 0.18)
+		})
+	}))
+}
 
 const getBestResult = (input) => {
 	if (!operators) return

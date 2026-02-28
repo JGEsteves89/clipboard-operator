@@ -9,6 +9,12 @@ class ScriptRunner {
 		this.winManager = winManager
 	}
 
+	_sendToRenderer(msg) {
+		if (this.winManager?.win && !this.winManager.win.isDestroyed()) {
+			this.winManager.win.webContents.send('fromMain', msg)
+		}
+	}
+
 	async run(operator) {
 		console.log('Running script operator', operator.operator)
 
@@ -39,6 +45,22 @@ class ScriptRunner {
 		}
 
 		console.log('Preparing to run:', scriptPath)
+
+		this._sendToRenderer({ command: 'scriptStart', data: { operatorName: operator.operator } })
+
+		const origLog = console.log
+		const origError = console.error
+		const origWarn = console.warn
+
+		const capture = (...args) => {
+			const text = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')
+			origLog(text)
+			this._sendToRenderer({ command: 'scriptLog', data: { text } })
+		}
+
+		console.log = capture
+		console.error = (...args) => capture('[err]', ...args)
+		console.warn = (...args) => capture('[warn]', ...args)
 
 		try {
 			// this ensures that the script is not cached
@@ -82,6 +104,10 @@ class ScriptRunner {
 				message: `Error running "${operator.operator}"`,
 				detail: err.message || String(err),
 			})
+		} finally {
+			console.log = origLog
+			console.error = origError
+			console.warn = origWarn
 		}
 	}
 }
