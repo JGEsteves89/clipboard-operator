@@ -22,9 +22,11 @@ const Shortcuts = require('./shortcuts')
 const ipc = require('./ipc')
 const ScriptRunner = require('./scriptRunner')
 
+let winManager = null
+
 app.whenReady().then(() => {
 	const opManager = new OperationsManager(OPERATIONS_PATH)
-	const winManager = new WindowManager(WIDTH, HEIGHT, DEBUG)
+	winManager = new WindowManager(WIDTH, HEIGHT, DEBUG)
 	const trayManager = new TrayManager(winManager)
 	const shortcuts = new Shortcuts(winManager)
 	const runner = new ScriptRunner(OPERATIONS_PATH, winManager)
@@ -37,9 +39,10 @@ app.whenReady().then(() => {
 })
 
 app.on('activate', () => {
-	if (WindowManager.getWindowsCount() === 0) {
-		const winManager = new WindowManager()
-		winManager.toggleWindow()
+	if (winManager) {
+		if (!winManager.win || !winManager.win.isVisible()) {
+			winManager.show()
+		}
 	}
 })
 

@@ -11,11 +11,13 @@ class WindowManager {
 		this.triggerShow = null // overridden by ipc
 		this.disableEscapeKeyShortcut = null  // overridden by shortcuts
 		this.enableEscapeKeyShortcut = null // overridden by shortcuts
+		this._lastShownAt = 0
 	}
 
 	hide() {
 		console.log('Will hide window')
 		this.state = 'hide'
+		this.win.webContents.send('fromMain', { command: 'windowWillHide' })
 		this.win.hide()
 
 		// release escape global shortcut key
@@ -27,6 +29,7 @@ class WindowManager {
 	show() {
 		console.log('Will show window')
 		this.state = 'show'
+		this._lastShownAt = Date.now()
 
 		// trigger clean up and input focus
 		if (this.triggerShow) {
@@ -77,6 +80,7 @@ class WindowManager {
 
 		this.win.on('blur', () => {
 			if (this.debug) return
+			if (Date.now() - this._lastShownAt < 300) return
 			if (this.win && this.win.isVisible()) this.toggleWindow()
 		})
 

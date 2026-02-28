@@ -5,8 +5,13 @@ const MAX_LOG_LINES = 7
 // Listen for messages from the main process
 window.api.receive('fromMain', (msg) => {
 	console.log('[MAIN => REND]:', msg.command, msg.data)
+	if (msg.command === 'windowWillHide') {
+		const wrap = document.getElementById('wrap')
+		if (wrap) wrap.style.opacity = '0'
+	}
 	if (msg.command === 'triggerShow') {
 		// clean the current input
+		const wrap = document.getElementById('wrap')
 		const searchInput = document.getElementById('searchInput')
 		const results = document.getElementById('result')
 
@@ -21,6 +26,8 @@ window.api.receive('fromMain', (msg) => {
 
 		operators = msg.data.operators
 		console.log('Loaded', operators.length, 'operators')
+
+		if (wrap) wrap.style.opacity = '1'
 	}
 	if (msg.command === 'scriptStart') {
 		showLogPanel()
