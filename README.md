@@ -17,6 +17,7 @@ Lightweight, customizable, and designed for developers who frequently need to re
 - Apply custom transformation operations to clipboard content.
 - Define operators via a JSON config file pointing to JavaScript scripts.
 - Supports LLM-powered operators using any OpenRouter-compatible model.
+- Streams LLM responses token-by-token with a live fading log panel in the UI.
 - Ships with an `examples/` folder to get started quickly.
 
 ---
@@ -81,13 +82,21 @@ Operators are listed in `workspace/operators.json`. Each entry points to a JavaS
 
 ## Writing a Script
 
-Each script exports an async `run` function that receives the clipboard content and returns the transformed result:
+Each script exports an async `run` function that receives the clipboard content and an operator context object, and returns the transformed result:
 
 ```javascript
-export async function run(input) {
+export async function run(input, operator) {
     return input.trim().toUpperCase();
 }
 ```
+
+The `operator` argument contains the fields defined in `operators.json` plus two extras injected at runtime:
+
+| Field | Description |
+|---|---|
+| `operator.instruction` | The `instruction` string from `operators.json`, if set |
+| `operator._workspaceDir` | Absolute path to the `workspace/` folder |
+| `operator.onToken` | Callback `(token: string) => void` — call this to stream output tokens live to the UI |
 
 ### Example: To Pascal Case
 
@@ -111,7 +120,7 @@ Input: `"some_variable_name"` → Output: `"SomeVariableName"`
 
 ## LLM-Powered Operators
 
-For AI-powered transformations, use the shared [examples/openrouter-api-call.js](examples/openrouter-api-call.js) script. It calls the [OpenRouter](https://openrouter.ai/) API with any model you configure.
+For AI-powered transformations, use the shared [examples/openrouter-api-call.js](examples/openrouter-api-call.js) script. It calls the [OpenRouter](https://openrouter.ai/) API with any model you configure, streaming the response token-by-token. As the model generates text, each token is forwarded live to a fading log panel in the UI so you can see progress in real time.
 
 ### 1. Add your API key
 
