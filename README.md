@@ -4,7 +4,9 @@ An Electron-based **clipboard manager** that applies JavaScript transformation o
 Lightweight, customizable, and designed for developers who frequently need to reformat or transform copied text — including AI-powered transformations via LLM APIs.
 
 ---
-Kudos to [minosvasilias](@https://github.com/minosvasilias) for pointing me in the right direction
+
+Kudos to [@minosvasilias](@https://github.com/minosvasilias) for pointing me in the right direction
+
 ---
 
 ## Video
