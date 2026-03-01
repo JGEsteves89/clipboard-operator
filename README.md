@@ -5,7 +5,7 @@ Lightweight, customizable, and designed for developers who frequently need to re
 
 ---
 
-Kudos to [@minosvasilias](@https://github.com/minosvasilias) for pointing me in the right direction
+Kudos to [@minosvasilias](https://github.com/minosvasilias) for pointing me in the right direction
 
 ---
 
