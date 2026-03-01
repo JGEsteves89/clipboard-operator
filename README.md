@@ -5,8 +5,12 @@ Lightweight, customizable, and designed for developers who frequently need to re
 
 ---
 
-## Usage
+Kudos to [@minosvasilias](https://github.com/minosvasilias) for pointing me in the right direction
 
+---
+
+## Video
+...loading
 ![Usage Demo](doc/video-usage.gif)
 
 ---
